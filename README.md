@@ -16,7 +16,7 @@ This project automates that whole workflow in a macro-enabled Excel workbook (`.
 
 all from one **Run Report** button on a UserForm. The same form lets the user jump to any sheet through a dropdown or add a new worksheet by name.
 
-**Result on the sample data:** 4 regional sheets (108 expense records in total) are formatted, totaled and consolidated into one Yearly Report showing a grand total of **2,675,745**, in a single click.
+
 
 ---
 
@@ -35,37 +35,7 @@ all from one **Run Report** button on a UserForm. The same form lets the user ju
 
 ---
 
-## 3. Data Source
-
-**Origin:** Sample divisional expense records stored in the workbook itself, one worksheet per region. The files `Before_running_the_Excel_VBA_Procedure.xlsx` and `After_running_the_excel_VBA_procedure.xlsx` show the state before and after the macros run.
-
-**Structure of each regional sheet** (6 columns):
-
-| Column | Header (added by VBA) | Content |
-|---|---|---|
-| A | Division | Region name (East / West / North / South) |
-| B | Category | Expense type, e.g. Rent, Software, Advertising, Salaries, Telemarketing |
-| C | Jan | January expense |
-| D | Feb | February expense |
-| E | Mar | March expense |
-| F | Total | Total expense for the row (Jan to Mar) |
-
-**Dataset size (varies per sheet, which is why the code uses dynamic ranges):**
-
-| Worksheet | Records | Sheet total |
-|---|---|---|
-| EAST RECORDS | 22 | 351,405 |
-| WEST RECORDS | 15 | 440,390 |
-| NORTH RECORDS | 41 | 923,740 |
-| SOUTH RECORDS | 30 | 960,210 |
-| **YEARLY REPORT** | **108** | **2,675,745** |
-
-**Before:** raw data with no header row and no formatting.
-**After:** header row inserted and styled, currency formatting applied, auto-fit columns, a total formula under the Total column on every sheet, and all regions merged into the Yearly Report.
-
----
-
-## 4. Features / Highlights
+## 3. Features / Highlights
 
 ### Automatic UserForm on open
 - A `Workbook_Open` event shows the **"Welcome to the Report Form"** UserForm as soon as the workbook opens, so the user never has to hunt for macros or buttons.
@@ -87,7 +57,9 @@ The `LoopYearlyReport` procedure loops through all worksheets and, for each regi
 5. After the loop, **applies the same header, formatting and total** to the Yearly Report itself.
 
 ### Built-in safeguards
-- **Run-once protection:** a sheet is only processed if cell A1 is not empty and is not already `"Division"`, so clicking Run Report again will not insert duplicate header rows.
+- **Run-once protection:** A sheet is only processed if :-<br>
+a) Cell A1 is not empty so that headers are not being added to the new empty worksheets which were placed through the "Add Worksheet" Button in the User Form.<br>
+b) Cell A1 is not already `"Division"`, so clicking Run Report again will not insert duplicate header rows on the sheets which have already been formatted.<br>
 - **Excludes the master sheet** from the regional loop, so the Yearly Report is never copied into itself.
 - **First-paste flag:** a `FirstTime` Boolean makes the first region paste at the top and every later region paste on the next empty row.
 
@@ -97,7 +69,7 @@ The `LoopYearlyReport` procedure loops through all worksheets and, for each regi
 
 ---
 
-## 5. How the Project Was Built (Step by Step)
+## 4. How the Project Was Built (Step by Step)
 
 **Step 1: Header insertion and formatting**
 Recorded macros with the macro recorder, inserted and formatted headers, tested them, then wrapped them in a `For Each` loop over all worksheets and added conditional logic.
@@ -106,14 +78,14 @@ Recorded macros with the macro recorder, inserted and formatted headers, tested 
 Wrote a procedure that uses the Range `Address` property to find the end of the Total column and drops a `SUM` formula just below it, then looped it across every worksheet.
 
 **Step 3: Yearly Report (master list)**
-Added a manually created *Yearly Report* sheet. Used VBA to copy each region's data and paste it into the master list, cleaned up the code, added the logic that prevents repeated runs, and tested the final procedure.
+Used VBA to copy each region's data and paste it into the master list, cleaned up the code, added the logic that prevents repeated runs, and tested the final procedure.
 
 **Step 4: UserForm interface**
 Built the form, set control properties and formatting, populated the dropdown in `UserForm_Initialize`, wired the ComboBox `Change` event, the Add Worksheet button (with a name prompt), and the Run Report button, then triggered the form from `Workbook_Open`.
 
 ---
 
-## 6. Skills Demonstrated
+## 5. Skills Demonstrated
 
 - Process automation and eliminating repetitive manual work
 - Excel VBA programming and event-driven design
@@ -124,7 +96,7 @@ Built the form, set control properties and formatting, populated the dropdown in
 
 ---
 
-## 7. How to Use
+## 6. How to Use
 
 1. Open the `.xlsm` file and click **Enable Content** if Excel shows a macro security warning.
 2. The **Report Form** appears automatically.
@@ -132,16 +104,3 @@ Built the form, set control properties and formatting, populated the dropdown in
 4. Click **Run Report** to format every regional sheet, add totals, and build the Yearly Report.
 
 ---
-
-## 8. Possible Future Improvements
-
-- Add error handling to the Add Worksheet button, for example for blank names, a cancelled `InputBox`, or a duplicate worksheet name.
-- Refresh the dropdown after a worksheet is added, so new sheets appear without reopening the form.
-- Replace `Select`/`Selection` with direct object references (for example `ws.Range("A1")`) for faster and more robust code.
-- Remove duplicate rows: the sample East and North sheets contain repeated records (e.g. Maintenance, Supplies, Software), which currently count twice in the totals.
-- Add a regional summary or chart to the Yearly Report, and an option to export it as PDF.
-- Use a dynamic column count instead of a fixed `A1:F1` header range.
-
----
-
-*Built with Excel VBA as a learning project.*
